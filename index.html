@@ -79,6 +79,7 @@
         // Ждём полной загрузки страницы
         document.addEventListener('DOMContentLoaded', function() {
             // Проверяем, запущено ли приложение в Telegram
+            console.log(window.Telegram?.WebApp)
             if (window.Telegram?.WebApp) {
                 // Сообщаем Telegram, что приложение готово
                 window.Telegram.WebApp.ready();
