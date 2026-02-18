@@ -2,7 +2,7 @@
 <html lang="ru">
 
 <head>
-    <script src="https://telegram.org/js/telegram-web-app.js?59"></script>
+    <!-- <script src="https://telegram.org/js/telegram-web-app.js?59"></script> -->
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
@@ -93,7 +93,7 @@
         // Ждём полной загрузки страницы
         document.addEventListener('DOMContentLoaded', function () {
             // Проверяем, запущено ли приложение в Telegram
-            console.log(window.Telegram?.WebApp)
+            console.log("Telegram app", window.Telegram?.WebApp)
             if (window.Telegram?.WebApp) {
                 // Сообщаем Telegram, что приложение готово
                 window.Telegram.WebApp.ready();
