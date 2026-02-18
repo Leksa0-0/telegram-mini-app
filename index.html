@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Моё первое Mini App</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 16px;
+            background-color: var(--tg-theme-bg-color, #ffffff);
+            color: var(--tg-theme-text-color, #000000);
+        }
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: var(--tg-theme-accent-text-color, #2481cc);
+            font-size: 24px;
+        }
+        .card {
+            background-color: var(--tg-theme-secondary-bg-color, #f0f0f0);
+            border-radius: 12px;
+            padding: 16px;
+            margin: 16px 0;
+        }
+        button {
+            background-color: var(--tg-theme-button-color, #2481cc);
+            color: var(--tg-theme-button-text-color, #ffffff);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: 500;
+            width: 100%;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(0,0,0,0.1);
+        }
+        .data-row:last-child {
+            border-bottom: none;
+        }
+        .label {
+            font-weight: bold;
+            color: var(--tg-theme-hint-color, #999999);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👋 Привет, я Mini App</h1>
+        
+        <div class="card">
+            <h2>Твои данные из Telegram</h2>
+            <div id="userData">
+                <p>Загрузка...</p>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Информация о приложении</h2>
+            <div id="appInfo"></div>
+        </div>
+
+        <button id="sendDataBtn">Отправить данные в бота</button>
+    </div>
+
+    <script>
+        // Ждём полной загрузки страницы
+        document.addEventListener('DOMContentLoaded', function() {
+            // Проверяем, запущено ли приложение в Telegram
+            if (window.Telegram?.WebApp) {
+                // Сообщаем Telegram, что приложение готово
+                window.Telegram.WebApp.ready();
+                
+                // Раскрываем приложение на весь экран
+                window.Telegram.WebApp.expand();
+                
+                // Получаем данные пользователя
+                const initData = window.Telegram.WebApp.initDataUnsafe;
+                const user = initData.user || {};
+                
+                // Отображаем данные пользователя
+                const userDataDiv = document.getElementById('userData');
+                userDataDiv.innerHTML = `
+                    <div class="data-row">
+                        <span class="label">ID:</span>
+                        <span>${user.id || 'неизвестно'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Имя:</span>
+                        <span>${user.first_name || 'неизвестно'} ${user.last_name || ''}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Username:</span>
+                        <span>${user.username ? '@' + user.username : 'нет'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Язык:</span>
+                        <span>${user.language_code || 'неизвестно'}</span>
+                    </div>
+                `;
+                
+                // Отображаем информацию о приложении
+                const appInfoDiv = document.getElementById('appInfo');
+                appInfoDiv.innerHTML = `
+                    <div class="data-row">
+                        <span class="label">Платформа:</span>
+                        <span>${window.Telegram.WebApp.platform || 'неизвестно'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Версия:</span>
+                        <span>${window.Telegram.WebApp.version || 'неизвестно'}</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="label">Тёмная тема:</span>
+                        <span>${window.Telegram.WebApp.colorScheme === 'dark' ? 'да' : 'нет'}</span>
+                    </div>
+                `;
+                
+                // Обработчик кнопки отправки данных
+                document.getElementById('sendDataBtn').addEventListener('click', function() {
+                    const dataToSend = {
+                        action: 'user_data',
+                        user_id: user.id,
+                        name: user.first_name,
+                        timestamp: Date.now()
+                    };
+                    
+                    // Отправляем данные обратно в бота
+                    window.Telegram.WebApp.sendData(JSON.stringify(dataToSend));
+                    
+                    // Показываем уведомление (опционально)
+                    window.Telegram.WebApp.showAlert('Данные отправлены!');
+                });
+                
+            } else {
+                // Если приложение запущено не в Telegram
+                document.body.innerHTML = `
+                    <div style="text-align: center; padding: 50px 20px;">
+                        <h1>❌ Ошибка</h1>
+                        <p>Это приложение должно быть запущено внутри Telegram.</p>
+                        <p>Открой его через бота в Telegram Web или мобильном приложении.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
+</body>
+</html>
